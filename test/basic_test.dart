@@ -148,6 +148,40 @@ void main() {
     expect(response.data?.endsWith('/a.txt'), isTrue);
   });
 
+  test('should upload bytes', () async {
+    final file = File('a.txt');
+    file.writeAsStringSync('File content');
+    final bytes = file.readAsBytesSync();
+
+    when(() => fetch
+        .postData('$objectUrl/public/a.txt', bytes, 'a.txt', mockFileOptions,
+            options: mockFetchOptions)).thenAnswer(
+        (_) => Future.value(StorageResponse(data: {'Key': 'public/a.txt'})));
+
+    final response =
+        await client.from('public').uploadData('a.txt', bytes, 'a.txt');
+    expect(response.error, isNull);
+    expect(response.data, isA<String>());
+    expect(response.data?.endsWith('/a.txt'), isTrue);
+  });
+
+  test('should update file from bytes', () async {
+    final file = File('a.txt');
+    file.writeAsStringSync('Updated content');
+    final bytes = file.readAsBytesSync();
+
+    when(() => fetch
+        .putData('$objectUrl/public/a.txt', bytes, 'a.txt', mockFileOptions,
+            options: mockFetchOptions)).thenAnswer(
+        (_) => Future.value(StorageResponse(data: {'Key': 'public/a.txt'})));
+
+    final response =
+        await client.from('public').updateData('a.txt', bytes, 'a.txt');
+    expect(response.error, isNull);
+    expect(response.data, isA<String>());
+    expect(response.data?.endsWith('/a.txt'), isTrue);
+  });
+
   test('should move file', () async {
     const requestBody = {
       'bucketName': 'public',

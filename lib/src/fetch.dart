@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' show MediaType;
@@ -102,24 +103,42 @@ class Fetch {
     }
   }
 
-  Future<StorageResponse> _handleMultipartRequest(
-    String method,
-    String url,
-    File file,
-    FileOptions fileOptions,
-    FetchOptions? options,
-  ) async {
-    try {
-      final headers = options?.headers ?? {};
-      if (method != 'GET') {
-        headers['Content-Type'] = 'application/json';
-      }
-      final multipartFile = http.MultipartFile.fromBytes(
+  http.MultipartFile _getMultiPartFile(dynamic file, {String? fileName}) {
+    if (file is File) {
+      return http.MultipartFile.fromBytes(
         '',
         file.readAsBytesSync(),
         filename: file.path,
         contentType: _parseMediaType(file.path),
       );
+    } else if (file is Uint8List) {
+      return http.MultipartFile.fromBytes(
+        '',
+        file,
+        filename: fileName,
+        contentType: _parseMediaType(fileName!),
+      );
+    } else {
+      throw Exception('Input should either be a File or Uint8List');
+    }
+  }
+
+  Future<StorageResponse> _handleMultipartRequest(
+    String method,
+    String url,
+    dynamic file,
+    FileOptions fileOptions,
+    FetchOptions? options, {
+    String? fileName,
+  }) async {
+    try {
+      final multipartFile = _getMultiPartFile(file, fileName: fileName);
+
+      final headers = options?.headers ?? {};
+      if (method != 'GET') {
+        headers['Content-Type'] = 'application/json';
+      }
+
       final request = http.MultipartRequest(method, Uri.parse(url))
         ..headers.addAll(headers)
         ..files.add(multipartFile)
@@ -168,9 +187,21 @@ class Fetch {
     return _handleMultipartRequest('POST', url, file, fileOptions, options);
   }
 
+  Future<StorageResponse> postData(
+      String url, Uint8List data, String fileName, FileOptions fileOptions,
+      {FetchOptions? options}) async {
+    return _handleMultipartRequest('POST', url, data, fileOptions, options);
+  }
+
   Future<StorageResponse> putFile(
       String url, File file, FileOptions fileOptions,
       {FetchOptions? options}) async {
     return _handleMultipartRequest('PUT', url, file, fileOptions, options);
+  }
+
+  Future<StorageResponse> putData(
+      String url, Uint8List data, String fileName, FileOptions fileOptions,
+      {FetchOptions? options}) async {
+    return _handleMultipartRequest('PUT', url, data, fileOptions, options);
   }
 }
