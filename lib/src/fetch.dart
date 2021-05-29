@@ -135,10 +135,14 @@ class Fetch {
     try {
       final multipartFile = _getMultiPartFile(file, url);
 
+      print(multipartFile);
+
       final headers = options?.headers ?? {};
       if (method != 'GET') {
         headers['Content-Type'] = 'application/json';
       }
+
+      print(headers);
 
       final request = http.MultipartRequest(method, Uri.parse(url))
         ..headers.addAll(headers)
@@ -147,6 +151,8 @@ class Fetch {
 
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
+
+      print(response.body);
 
       if (_isSuccessStatusCode(response.statusCode)) {
         if (options?.noResolveJson == true) {
