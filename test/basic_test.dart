@@ -153,8 +153,8 @@ void main() {
     file.writeAsStringSync('File content');
     final bytes = file.readAsBytesSync();
 
-    when(() => fetch
-        .postData('$objectUrl/public/a.txt', bytes, 'a.txt', mockFileOptions,
+    when(() =>
+        fetch.postData('$objectUrl/public/a.txt', bytes, mockFileOptions,
             options: mockFetchOptions)).thenAnswer(
         (_) => Future.value(StorageResponse(data: {'Key': 'public/a.txt'})));
 
@@ -170,8 +170,8 @@ void main() {
     file.writeAsStringSync('Updated content');
     final bytes = file.readAsBytesSync();
 
-    when(() => fetch
-        .putData('$objectUrl/public/a.txt', bytes, 'a.txt', mockFileOptions,
+    when(() =>
+        fetch.putData('$objectUrl/public/a.txt', bytes, mockFileOptions,
             options: mockFetchOptions)).thenAnswer(
         (_) => Future.value(StorageResponse(data: {'Key': 'public/a.txt'})));
 

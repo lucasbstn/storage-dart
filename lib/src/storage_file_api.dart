@@ -34,7 +34,6 @@ class StorageFileApi {
   /// @param path The relative file path including the bucket ID. Should be of the format `bucket/folder/subfolder/filename.png`. The bucket must already exist before attempting to upload.
   /// @param data The bytes to be stored in the bucket.
   /// @param fileOptions HTTP headers. For example `cacheControl`
-  /// @param fileName The name under which to save the file
   Future<StorageResponse<String>> uploadData(
       String path, Uint8List data, String fileName,
       {FileOptions? fileOptions}) async {
@@ -43,7 +42,6 @@ class StorageFileApi {
       final response = await fetch.postData(
         '$url/object/$_path',
         data,
-        fileName,
         fileOptions ?? defaultFileOptions,
         options: FetchOptions(headers: headers),
       );
@@ -64,7 +62,6 @@ class StorageFileApi {
   /// @param path The relative file path including the bucket ID. Should be of the format `bucket/folder/subfolder`. The bucket already exist before attempting to upload.
   /// @param data The data to be stored in the bucket.
   /// @param fileOptions HTTP headers. For example `cacheControl`
-  /// @param fileName The name under which to save the file
   Future<StorageResponse<String>> updateData(
       String path, Uint8List data, String fileName,
       {FileOptions? fileOptions}) async {
@@ -73,7 +70,6 @@ class StorageFileApi {
       final response = await fetch.putData(
         '$url/object/$_path',
         data,
-        fileName,
         fileOptions ?? defaultFileOptions,
         options: FetchOptions(headers: headers),
       );

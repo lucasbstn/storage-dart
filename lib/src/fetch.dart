@@ -103,7 +103,7 @@ class Fetch {
     }
   }
 
-  http.MultipartFile _getMultiPartFile(dynamic file, {String? fileName}) {
+  http.MultipartFile _getMultiPartFile(dynamic file, String url) {
     if (file is File) {
       return http.MultipartFile.fromBytes(
         '',
@@ -112,11 +112,13 @@ class Fetch {
         contentType: _parseMediaType(file.path),
       );
     } else if (file is Uint8List) {
+      final fileName = url.split('/');
+
       return http.MultipartFile.fromBytes(
         '',
         file,
-        filename: fileName,
-        contentType: _parseMediaType(fileName!),
+        contentType:
+            fileName.isNotEmpty ? _parseMediaType(fileName.last) : null,
       );
     } else {
       throw Exception('Input should either be a File or Uint8List');
@@ -128,11 +130,10 @@ class Fetch {
     String url,
     dynamic file,
     FileOptions fileOptions,
-    FetchOptions? options, {
-    String? fileName,
-  }) async {
+    FetchOptions? options,
+  ) async {
     try {
-      final multipartFile = _getMultiPartFile(file, fileName: fileName);
+      final multipartFile = _getMultiPartFile(file, url);
 
       final headers = options?.headers ?? {};
       if (method != 'GET') {
@@ -188,16 +189,9 @@ class Fetch {
   }
 
   Future<StorageResponse> postData(
-      String url, Uint8List data, String fileName, FileOptions fileOptions,
+      String url, Uint8List data, FileOptions fileOptions,
       {FetchOptions? options}) async {
-    return _handleMultipartRequest(
-      'POST',
-      url,
-      data,
-      fileOptions,
-      options,
-      fileName: fileName,
-    );
+    return _handleMultipartRequest('POST', url, data, fileOptions, options);
   }
 
   Future<StorageResponse> putFile(
@@ -207,7 +201,7 @@ class Fetch {
   }
 
   Future<StorageResponse> putData(
-      String url, Uint8List data, String fileName, FileOptions fileOptions,
+      String url, Uint8List data, FileOptions fileOptions,
       {FetchOptions? options}) async {
     return _handleMultipartRequest(
       'PUT',
@@ -215,7 +209,6 @@ class Fetch {
       data,
       fileOptions,
       options,
-      fileName: fileName,
     );
   }
 }
