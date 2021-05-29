@@ -158,8 +158,7 @@ void main() {
             options: mockFetchOptions)).thenAnswer(
         (_) => Future.value(StorageResponse(data: {'Key': 'public/a.txt'})));
 
-    final response =
-        await client.from('public').uploadData('a.txt', bytes, 'a.txt');
+    final response = await client.from('public').uploadData('a.txt', bytes);
     expect(response.error, isNull);
     expect(response.data, isA<String>());
     expect(response.data?.endsWith('/a.txt'), isTrue);
@@ -175,8 +174,7 @@ void main() {
             options: mockFetchOptions)).thenAnswer(
         (_) => Future.value(StorageResponse(data: {'Key': 'public/a.txt'})));
 
-    final response =
-        await client.from('public').updateData('a.txt', bytes, 'a.txt');
+    final response = await client.from('public').updateData('a.txt', bytes);
     expect(response.error, isNull);
     expect(response.data, isA<String>());
     expect(response.data?.endsWith('/a.txt'), isTrue);
