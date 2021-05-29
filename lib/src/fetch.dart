@@ -190,7 +190,14 @@ class Fetch {
   Future<StorageResponse> postData(
       String url, Uint8List data, String fileName, FileOptions fileOptions,
       {FetchOptions? options}) async {
-    return _handleMultipartRequest('POST', url, data, fileOptions, options);
+    return _handleMultipartRequest(
+      'POST',
+      url,
+      data,
+      fileOptions,
+      options,
+      fileName: fileName,
+    );
   }
 
   Future<StorageResponse> putFile(
@@ -202,6 +209,13 @@ class Fetch {
   Future<StorageResponse> putData(
       String url, Uint8List data, String fileName, FileOptions fileOptions,
       {FetchOptions? options}) async {
-    return _handleMultipartRequest('PUT', url, data, fileOptions, options);
+    return _handleMultipartRequest(
+      'PUT',
+      url,
+      data,
+      fileOptions,
+      options,
+      fileName: fileName,
+    );
   }
 }
