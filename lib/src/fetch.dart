@@ -112,13 +112,16 @@ class Fetch {
         contentType: _parseMediaType(file.path),
       );
     } else if (file is Uint8List) {
-      final fileName = url.split('/');
+      final filename = url.split('/');
 
       return http.MultipartFile.fromBytes(
         '',
         file,
+        filename: filename.isNotEmpty
+            ? filename.last
+            : "${DateTime.now().millisecondsSinceEpoch}",
         contentType:
-            fileName.isNotEmpty ? _parseMediaType(fileName.last) : null,
+            filename.isNotEmpty ? _parseMediaType(filename.last) : null,
       );
     } else {
       throw Exception('Input should either be a File or Uint8List');
@@ -142,8 +145,6 @@ class Fetch {
         headers['Content-Type'] = 'application/json';
       }
 
-      print(headers);
-
       final request = http.MultipartRequest(method, Uri.parse(url))
         ..headers.addAll(headers)
         ..files.add(multipartFile)
@@ -151,8 +152,6 @@ class Fetch {
 
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
-
-      print(response.body);
 
       if (_isSuccessStatusCode(response.statusCode)) {
         if (options?.noResolveJson == true) {
